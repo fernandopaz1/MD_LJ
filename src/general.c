@@ -16,7 +16,7 @@ double gaussiana(double mu, double sigma){
 	for(i=0;i<n;i++){
 		z+=aleatorio();
 	}
-	z=sqrt(12+n)*(z/((double)n)-0.5);
+	z=sqrt(12*n)*(z/((double)n)-0.5);
 return z*sigma+mu;
 }
 
@@ -29,8 +29,9 @@ double norma(double *v, int longitud){
 return acum;
 }
 
+
+
 int pruebageneral(int N, double mu, double sigma,double radio){
-	printf("Hasta aca");	
 	int i;
 	double *v,fase;
 	
