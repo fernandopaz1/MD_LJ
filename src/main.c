@@ -17,16 +17,20 @@ int main(int argc, char *argv[]){
 //	set_v(v,N,T);
 
 //------------------ MAIN DE EJEMPLO PARA VISUALIZAR CON VMD ------------------//
-  int N = 125;
-  float L = 10; //dx = 0.05;
+	int N = 125;
+	double L = 10; //dx = 0.05;
 	double T=1.0;
-  float *x = (float *) malloc(3*N*sizeof(float));
-  float *v = (float *) malloc(3*N*sizeof(float));
+	int N_frames = 100;
+	double h=0.001;
+	double rc=2.25;
 
+	simulacion(N, N_frames,rc, L, h, T);
+
+/*	
   // El formato del filename ".lammpstrj", ese VMD lo lee comodamente
   char filename[255];
   sprintf(filename, "prueba.lammpstrj");
-  int N_frames = 100;
+  
 
 // Armo un boomerang con un """""movimiento browniano"""""
   //for(int i = 0; i < 3*N; i++){
@@ -53,7 +57,7 @@ int main(int argc, char *argv[]){
 // para tener checkpoints de estados bien termalizados.
 // Checkpoint is love, checkpoint is life
 //-----------------------------------------------------------------------------//
-
+*/
   return 0;
 }
 

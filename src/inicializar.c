@@ -5,8 +5,11 @@
 #include <time.h>
 #include <unistd.h>
 
+int set_box(double *x,int N,double L);
+int set_v(double *velocidad,int N,double T);
+
 // Definicion de funciones
-int set_box(float *x,int N,double L){
+int set_box(double *x,int N,double L){
 	int n=cbrt(N),i,j,k;
 	double dl=L/n;
 	for(i=0;i<n;i++){
@@ -17,26 +20,26 @@ int set_box(float *x,int N,double L){
 				*(x+3*i+(3*n)*j+(3*n*n)*k+2)=dl*(k+0.5);
 			}
 		}
-}
+	}
 
 return 0;
 }
 
-int set_v(float *v,int N,double T){
+int set_v(double *velocidad,int N,double T){
 	int i,k;
 	double sigma=sqrt(T);
 	for(i=0;i<3*N;i++){
-		*(v+i)=gaussiana(0.0,sigma);
+		*(velocidad+i)=gaussiana(0.0,sigma);
 	}
 	double Vcm[3]={0,0,0};
 	for(i=0;i<N;i++){
 		for(k=0;k<3;k++){
-			Vcm[k]+=*(v+3*i+k)/N;
+			Vcm[k]+=*(velocidad+3*i+k)/N;
 		}
 	}
 	for(i=0;i<N;i++){
 		for(k=0;k<3;k++){
-			*(v+3*i+k)-=Vcm[k];
+			*(velocidad+3*i+k)-=Vcm[k];
 		}
 	}
 return 0;

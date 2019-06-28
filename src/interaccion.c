@@ -7,7 +7,7 @@
 
 // Definicion de funciones
 
-double delta(float *x, int i, int j, double L,double *delta_x){
+double delta(double *x, int i, int j, double L,double *delta_x){
 	int k;
 	double distancia_cuad;
 
@@ -20,24 +20,27 @@ return distancia_cuad;
 }
 
 
-int Lenard_Jones(double *fuerzas, double *potencial, double e, double sigma, double rc, float *x, int i, int j, double V0,double L){		
-	double distancia_cuad, r_sext, r_doc,*delta_x,a;
+int Lenard_Jones(double *fuerzas, double *potencial, double e, double sigma, double rc, double *x, int i, int j, double V0,double L){		
+	double distancia_cuad, r_sext, r_doc,*delta_x,a,r,V;
 	int k;
 
 	delta_x=(double*)malloc(3*sizeof(double));
 
 	distancia_cuad=delta(x,i,j,L,delta_x);
+	r=sqrt(distancia_cuad);
 
-	if(distancia_cuad<rc){
+	if(r<rc){
 		r_sext=pow(sigma/distancia_cuad,3);
 		r_doc=pow(r_sext,2);
-		*potencial=4.0*e*(r_doc-r_sext);
+		V=4.0*e*(r_doc-r_sext);
 		for(k=0;k<3;k++){
-			a=6.0*e*(*(delta_x+k)/distancia_cuad)*((*potencial));
+			a=6.0*e*(*(delta_x+k)/distancia_cuad)*((*potencial)+8*e*r_doc);
 			*(fuerzas+3*i+k)+=a;
 			*(fuerzas+3*j+k)-=a;	
 		}
-		*potencial-=V0;
+		V-=V0;
+		*(potencial+i)+=V;
+		*(potencial+j	)+=V;
 	}
 free(delta_x);
 return 0;
@@ -53,7 +56,7 @@ return 4.0*e*(r_doc-r_sext);
 }
 
 int tabla(double e, double sigma, double paso){
-	double r,r_cuad, r_sext, r_doc,V;
+	double r,r_cuad, r_sext, r_doc,V,F_mod;
 	
 	FILE *finterp= fopen("tabla", "w");
 	
@@ -63,7 +66,8 @@ int tabla(double e, double sigma, double paso){
 		r_sext=pow(sigma/r_cuad,3);
 		r_doc=pow(r_sext,2);
 		V=4.0*e*(r_doc-r_sext);
-		fprintf(finterp, "%lf %lf %lf\n",r,r_cuad,V);
+		F_mod=6*(V+8*e*r_doc)/r_cuad;
+		fprintf(finterp, "%lf %lf %lf %lf\n",r,r_cuad,V,F_mod);
 	}
 
 fclose(finterp);
@@ -73,25 +77,27 @@ return 0;
 
 
 
-int Lenard_Jones_interp(double *fuerzas, double *potencial, double e, double sigma, double rc, float *x, int i, int j, double V0, double *finterp, double paso, double L){		
-	double distancia_cuad,*delta_x,a;
+int Lenard_Jones_interp(double *fuerzas, double *potencial, double e, double sigma, double rc, double *x, int i, int j, double V0, double *finterp, double paso, double L){		
+	double distancia_cuad,*delta_x,a,r,V;
 	int indice,k;	
 
 	delta_x=(double*)malloc(3*sizeof(double));
 
 	distancia_cuad=delta(x,i,j,L,delta_x);
-
-	if(distancia_cuad<rc){	
+	r=sqrt(distancia_cuad);
+	if(r<rc){	
 		
 		indice=(int)((distancia_cuad-(*finterp+1))/paso);
 	
-		*potencial=*(finterp+3*indice+2);
+		V=*(finterp+3*indice+2);
 		for(k=0;k<3;k++){
-			a=6.0*e*(*(delta_x+k)/distancia_cuad)*(*potencial);
+			a=(*(delta_x+k))*(*(finterp+3*indice+3));
 			*(fuerzas+3*i+k)+=a;
 			*(fuerzas+3*j+k)-=a;	
 		}
-		*potencial-=V0;
+		V-=V0;
+		*(potencial+i)+=V;
+		*(potencial+j)+=V;
 	}
 free(delta_x);
 return 0;
