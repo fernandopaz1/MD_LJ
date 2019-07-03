@@ -34,13 +34,13 @@ int Lenard_Jones(double *fuerzas, double *potencial, double e, double sigma, dou
 		r_doc=pow(r_sext,2);
 		V=4.0*e*(r_doc-r_sext);
 		for(k=0;k<3;k++){
-			a=6.0*e*(*(delta_x+k)/distancia_cuad)*((*potencial)+8*e*r_doc);
+			a=6.0*e*(*(delta_x+k)/distancia_cuad)*(V+8*e*r_doc);
 			*(fuerzas+3*i+k)+=a;
 			*(fuerzas+3*j+k)-=a;	
 		}
 		V-=V0;
 		*(potencial+i)+=V;
-		*(potencial+j	)+=V;
+		*(potencial+j)-=V;
 	}
 free(delta_x);
 return 0;

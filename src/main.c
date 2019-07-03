@@ -17,9 +17,11 @@ int main(int argc, char *argv[]){
 //	set_v(v,N,T);
 
 //------------------ MAIN DE EJEMPLO PARA VISUALIZAR CON VMD ------------------//
-	int N = 125;
-	double L = 10; //dx = 0.05;
-	double T=1.0;
+	int N = 512;
+	double rho=0.8442;
+//	double L = 10; //dx = 0.05;
+	double L=cbrt(512/rho);
+	double T=0.728;
 	int N_frames = 100;
 	double h=0.001;
 	double rc=2.25;

@@ -31,7 +31,7 @@ int set_v(double *velocidad,int N,double T){
 	for(i=0;i<3*N;i++){
 		*(velocidad+i)=gaussiana(0.0,sigma);
 	}
-	double Vcm[3]={0,0,0};
+	double Vcm[3]={0.0,0.0,0.0};
 	for(i=0;i<N;i++){
 		for(k=0;k<3;k++){
 			Vcm[k]+=*(velocidad+3*i+k)/N;
@@ -42,6 +42,6 @@ int set_v(double *velocidad,int N,double T){
 			*(velocidad+3*i+k)-=Vcm[k];
 		}
 	}
+
 return 0;
 }
-
