@@ -11,11 +11,18 @@ double delta(double *x, int i, int j, double L,double *delta_x){
 	int k;
 	double distancia_cuad;
 
+
 	for(k=0;k<3;k++){
-		*(delta_x+k)=(double)(*(x+3*i+k)-*(x+3*j+k));
-		*(delta_x+k)-=L*floor((*(delta_x+k)/L)*2);   // si la distancia es mayor a la de la caja interactua con la imagen
+		*(delta_x+k)=(*(x+3*i+k)-*(x+3*j+k));
+		if(*(delta_x+k)<-L/2){
+			*(delta_x+k)+=L;	
+		}
+		if(*(delta_x+k)>L/2){
+			*(delta_x+k)-=L;	
+		}
 	}
 	distancia_cuad=norma(delta_x,3);
+
 return distancia_cuad;
 }
 
@@ -29,18 +36,25 @@ int Lenard_Jones(double *fuerzas, double *potencial, double e, double sigma, dou
 	distancia_cuad=delta(x,i,j,L,delta_x);
 	r=sqrt(distancia_cuad);
 
+//	if(r>7.33){
+//printf("guarda");
+//printf("  %lf\n",r);}
+
 	if(r<rc){
-		r_sext=pow(sigma/distancia_cuad,3);
+		//printf("Hay interaccion");
+		
+		r_sext=pow(sigma*sigma/distancia_cuad,3);
 		r_doc=pow(r_sext,2);
 		V=4.0*e*(r_doc-r_sext);
 		for(k=0;k<3;k++){
-			a=6.0*e*(*(delta_x+k)/distancia_cuad)*(V+8*e*r_doc);
+			//a=6.0*e*(*(delta_x+k)/distancia_cuad)*(V+8*e*r_doc);
+			a = 24.0*(2*r_doc - r_sext)/distancia_cuad*delta_x[k];
 			*(fuerzas+3*i+k)+=a;
 			*(fuerzas+3*j+k)-=a;	
 		}
 		V-=V0;
 		*(potencial+i)+=V;
-		*(potencial+j)-=V;
+		*(potencial+j)+=V;
 	}
 free(delta_x);
 return 0;

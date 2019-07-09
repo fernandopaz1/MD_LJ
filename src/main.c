@@ -10,21 +10,30 @@
 
 int main(int argc, char *argv[]){
   // Definicion del main
-  pruebageneral(1000000, 5.0, 1.0,2.0);                                          //Chequear la gaussiana
+  //pruebageneral(1000000, 5.0, 1.0,2.0);                                          //Chequear la gaussiana
+
+double total_time;
+	clock_t start, end;
+	start = clock();
 
 
-//	set_box(x,N,L);
-//	set_v(v,N,T);
+	
+	srand(time(NULL)); 
 
-//------------------ MAIN DE EJEMPLO PARA VISUALIZAR CON VMD ------------------//
+
+
+
+	
+
 	int N = 512;
 	double rho=0.8442;
-//	double L = 10; //dx = 0.05;
-	double L=cbrt(512/rho);
+	double L=cbrt(N/rho);
 	double T=0.728;
-	int N_frames = 100;
-	double h=0.001;
-	double rc=2.25;
+	int N_frames = 50000;
+	//int N_frames = 100;
+	double h=0.00005;
+	double rc=2.56;
+
 
 	simulacion(N, N_frames,rc, L, h, T);
 
@@ -59,7 +68,15 @@ int main(int argc, char *argv[]){
 // para tener checkpoints de estados bien termalizados.
 // Checkpoint is love, checkpoint is life
 //-----------------------------------------------------------------------------//
+
 */
+
+
+	end = clock();								//time count stops 
+
+
+	total_time = ((double) (((double)(end - start)) / (double)CLOCKS_PER_SEC)/60.0);	
+	printf("\nEl tiempo (minutos) requerido es:  %lf \n", total_time);		//calulate total time
   return 0;
 }
 

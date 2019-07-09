@@ -105,14 +105,12 @@ return a;
 }
 
 double energia_potencial(double *potencial,double *E_potencial, int N, double masa){
-	int i,k;
+	int i;
 
 	*(E_potencial)=0.0;
 
-	for(i=0;i<N;i+=3){
-		for(k=0;k<3;k++){
-			*(E_potencial)+=0.5*pow(*(potencial+i),2);
-		}
+	for(i=0;i<N;i++){
+		*(E_potencial)+=0.5*(*(potencial+i));
 	}	
 
 return (*E_potencial)/((double)N);

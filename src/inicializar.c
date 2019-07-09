@@ -45,3 +45,33 @@ int set_v(double *velocidad,int N,double T){
 
 return 0;
 }
+
+
+int save_checkpoint(char *nombre, double *x, double *velocidad,int N){
+	int i;
+
+	FILE *ftermalizado= fopen(nombre, "w");
+
+	for(i=0;i<3*N;i++){
+		fprintf(ftermalizado, "%lf %lf\n" ,*(x+i),*(velocidad+i));
+	}
+
+fclose(ftermalizado);
+return 0;
+}
+
+
+int load_checkpoint(char *nombre, double *x, double *velocidad,int N){
+//	int i;
+
+	FILE *ftermalizado= fopen(nombre, "r");
+
+	//for(i=0;i<3*N;i++){
+		if(!fscanf(ftermalizado, "%lf %lf", x,velocidad)){printf("Error en load checkpoin");}
+	//	if(!fscanf(ftermalizado, "%lf", (+2*i+1))){break;}
+	//}
+
+fclose(ftermalizado);
+return 0;
+}
+
