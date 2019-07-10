@@ -25,17 +25,26 @@ double total_time;
 
 	
 
-	int N = 512;
-	double rho=0.8442;
+	int N = 125;
+	double rho=0.8;
 	double L=cbrt(N/rho);
-	double T=0.728;
-	int N_frames = 50000;
+	double T=1.5;
+	int N_frames = 100000;
 	//int N_frames = 100;
 	double h=0.00005;
 	double rc=2.56;
 
 
-	simulacion(N, N_frames,rc, L, h, T);
+//	problema1(N, N_frames,rc, L, h, T);
+	problema2(N, N_frames,rc, L, h, T);
+
+	
+	N = 125;
+	rho=1.0;
+	L=cbrt(N/rho);
+
+
+	problema2(N, N_frames,rc, L, h, T);
 
 /*	
   // El formato del filename ".lammpstrj", ese VMD lo lee comodamente
