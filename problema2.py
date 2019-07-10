@@ -14,14 +14,16 @@ import matplotlib.pyplot as plt
 
 plt.ion()
 
-N=512
+N=125
 h=0.00005
 a=1.0/np.sqrt(N)
 
 
 T_ini=0.4
-T_fin=1.28
-delta_T=0.01
+T_fin=2.0
+delta_T=0.05
+
+densidad=0.6
 
 len_T=int((T_fin-T_ini)/delta_T)
 
@@ -36,7 +38,8 @@ T=T_ini
 j=0
 while(T<T_fin):
 
-	energias=np.loadtxt('/home/paz/MD_LJ/archivos/problema1/Energia T= {}'.format('%.6f' %T))
+#	energias=np.loadtxt('/home/paz/MD_LJ/archivos/problema1/Energia T= {}'.format('%.6f' %T))
+	energias=np.loadtxt('Energia T= {} densidad= {}'.format('%.6f' %T,'%.6f' %densidad))
 
 	Ec=energias[:,0]
 	Ep=energias[:,1]
@@ -47,6 +50,7 @@ while(T<T_fin):
 
 	
 	i=0
+	indice_term=0
 	while(verlet[i]>a):
 		indice_term=i
 		i=i+1
@@ -69,7 +73,7 @@ while(T<T_fin):
 
 	fluctuaciones[j]=np.sqrt(energia_cuad_med[j]-energia_media[j]*energia_media[j])
 
-	print("Las fluctuaciones de la energía son:  ",fluctuaciones[j])
+	#print("Las fluctuaciones de la energía son:  ",fluctuaciones[j])
 
 
 	###################################################
@@ -90,7 +94,8 @@ while(T<T_fin):
 		plt.xlabel('Tiempo')
 		plt.ylabel('Coeficiente de Verlet')
 		plt.legend()
-		
+		plt.show()
+	
 		plt.figure(1)
 		line1,=plt.plot(t,E,label='Energía $\\sigma_E={}$'.format('%.4f' %fluctuaciones[j]))
 		line2,=plt.plot(t,Ec,label='Energía Cinética')
@@ -101,7 +106,7 @@ while(T<T_fin):
 		plt.legend()
 		plt.show()
 
-	plt.show()
+	
 	T=T+delta_T
 	j=j+1
 
