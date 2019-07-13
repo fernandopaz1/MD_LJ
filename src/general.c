@@ -127,7 +127,7 @@ return (Ec+Ep);
 
 int normalizacion_velocidad(double *velocidad, double *E_cinetica,double T, int N){
 	int i;
-	double Tmedida=energia_cinetica(velocidad,E_cinetica, N);
+	double Tmedida=(2/3)*energia_cinetica(velocidad,E_cinetica, N);
 	double factor=sqrt(T/Tmedida);
 	for(i=0;i<3*N;i++){
 		*(velocidad+i)=factor*(*(velocidad+i));

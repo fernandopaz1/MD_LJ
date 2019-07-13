@@ -19,34 +19,42 @@ h=0.00005
 a=1.0/np.sqrt(N)
 
 
-T_ini=0.4
+T_ini=0.4+0.05
 T_fin=2.0
 delta_T=0.05
 
 densidad=0.6
 
-len_T=int((T_fin-T_ini)/delta_T)
+V=N/densidad
+
+len_T=int(np.floor(T_fin-T_ini)/delta_T)
 
 T_array=np.linspace(T_ini,T_fin,len_T)
 
 energia_media=np.zeros(len_T)
 energia_cuad_med=np.zeros(len_T)
 fluctuaciones=np.zeros(len_T)
+p_exceso_medio=np.zeros(len_T)
+
+presion=np.zeros(len_T)
 
 
 T=T_ini
 j=0
-while(T<T_fin):
+while(j<len_T-1):
 
-#	energias=np.loadtxt('/home/paz/MD_LJ/archivos/problema1/Energia T= {}'.format('%.6f' %T))
 	energias=np.loadtxt('Energia T= {} densidad= {}'.format('%.6f' %T,'%.6f' %densidad))
+#	energias=np.loadtxt('/home/paz/MD_LJ/archivos/problema2/Energia T= {} densidad= {}'.format('%.6f' %T,'%.6f' %densidad))
 
 	Ec=energias[:,0]
 	Ep=energias[:,1]
 	E=energias[:,2]
-
+	
 	verlet=energias[:,3]
+	P_exceso=energias[:,4]
+	p_exceso_medio[j]=np.mean(P_exceso)
 
+	
 
 	
 	i=0
@@ -67,6 +75,8 @@ while(T<T_fin):
 	energia_media[j]=np.mean(E[indice_term:])
 	energia_cuad_med[j]=0
 
+	presion[j]=densidad*np.mean(Ec[indice_term:])+(1/(3*V))*p_exceso_medio[j]
+	
 	for i in range(indice_term,len(E)):
 		energia_cuad_med[j]=energia_cuad_med[j]+E[i]*E[i]
 	energia_cuad_med[j]=energia_cuad_med[j]/(len(E)-indice_term)
@@ -127,5 +137,13 @@ plt.figure(4)
 line1=plt.scatter(T_array,fluctuaciones,label='Energía por partícula')
 plt.xlabel('Temperatura')
 plt.ylabel('fluctuaciones')
+plt.legend()
+plt.show()
+
+
+plt.figure(5)
+line1=plt.scatter(1/T_array,presion/(densidad*T_array)-1,label='presion')
+plt.xlabel('Temperatura')
+plt.ylabel('presion')
 plt.legend()
 plt.show()

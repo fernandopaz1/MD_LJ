@@ -67,7 +67,7 @@ int load_checkpoint(char *nombre, double *x, double *velocidad,int N){
 	FILE *ftermalizado= fopen(nombre, "r");
 
 	//for(i=0;i<3*N;i++){
-		if(!fscanf(ftermalizado, "%lf %lf", x,velocidad)){printf("Error en load checkpoin");}
+		if(!fscanf(ftermalizado, "%lf%lf", x,velocidad)){printf("Error en load checkpoin");}
 	//	if(!fscanf(ftermalizado, "%lf", (+2*i+1))){break;}
 	//}
 

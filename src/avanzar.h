@@ -11,5 +11,6 @@ int problema1(int N, int N_frames,double rc, double L, double h, double T);
 int problema2(int N, int N_frames,double rc, double L, double h, double T);
 double coeficiente_verlet(double L, int N, double *x);
 double presion(double Ec,double L, int N,double *fuerza,double *x,double rc);
-double distrib_radial(double *distrad, double *x, double N, double L, double densidad, double Q); 
+double distrib_radial(double *distrad, double *x, double N, double L, double densidad, double Q);
+double lyderman(double L, int N,double *x, double *drij); 
 #endif
