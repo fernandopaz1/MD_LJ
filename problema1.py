@@ -183,7 +183,7 @@ plt.show
 
 term_max=np.max(term)
 
-plt.figure(5)
+plt.figure(6)
 plt.scatter(T_array,term,label='Pasos termalizacion max={}'.format('%d' %term_max))
 plt.xlabel('Temperatura')
 plt.ylabel('Pasos')

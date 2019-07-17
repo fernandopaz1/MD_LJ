@@ -27,7 +27,7 @@ return distancia_cuad;
 }
 
 
-int Lenard_Jones(double *fuerzas, double *potencial, double e, double sigma, double rc, double *x, int i, int j, double V0,double L){		
+double Lenard_Jones(double *fuerzas, double *potencial, double e, double sigma, double rc, double *x, int i, int j, double V0,double L,double *p){		
 	double distancia_cuad, r_sext, r_doc,*delta_x,a,r,V;
 	int k;
 
@@ -49,6 +49,7 @@ int Lenard_Jones(double *fuerzas, double *potencial, double e, double sigma, dou
 		for(k=0;k<3;k++){
 			//a=6.0*e*(*(delta_x+k)/distancia_cuad)*(V+8*e*r_doc);
 			a = 24.0*(2*r_doc - r_sext)/distancia_cuad*delta_x[k];
+			*p+=delta_x[k]*a;
 			*(fuerzas+3*i+k)+=a;
 			*(fuerzas+3*j+k)-=a;	
 		}
@@ -57,7 +58,7 @@ int Lenard_Jones(double *fuerzas, double *potencial, double e, double sigma, dou
 		*(potencial+j)+=V;
 	}
 free(delta_x);
-return 0;
+return 0.0;
 }
 
 double V0_LJ(double rc,double sigma, double e){

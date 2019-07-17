@@ -29,11 +29,11 @@ return 0;
 }
 
 
-int paso(double *x, double *velocidad,double *fuerza, double *fuerza_vieja, double *potencial,int N, double rc, double V0, double L, double h){
+int paso(double *x, double *velocidad,double *fuerza, double *fuerza_vieja, double *potencial,int N, double rc, double V0, double L, double h,double *p){
 	int i, j;
 
 	
-
+	*p=0.0;
 	for(i=0;i<N;i++){
 		for(j=0;j<3;j++){	
 			*(fuerza_vieja+3*i+j)=*(fuerza+3*i+j);
@@ -45,7 +45,7 @@ int paso(double *x, double *velocidad,double *fuerza, double *fuerza_vieja, doub
 	
 	for(i=0;i<(N-1);i++){
 		for(j=i+1;j<N;j++){
-			Lenard_Jones(fuerza, potencial, 1.0, 1.0, rc, x, i, j, V0,L);
+			Lenard_Jones(fuerza, potencial, 1.0, 1.0, rc, x, i, j, V0,L,p);
 		}	
 	}
 
@@ -57,12 +57,12 @@ return 0;
 }
 
 
-int descorrelacionar(double *x, double *velocidad,double *fuerza, double *fuerza_vieja, double *potencial,int N, double rc, double V0, double L, double h){
+int descorrelacionar(double *x, double *velocidad,double *fuerza, double *fuerza_vieja, double *potencial,int N, double rc, double V0, double L, double h,double *p){
 	double a;
 
 	a=1.0/sqrt(N);
 	while(coeficiente_verlet(L,N,x)>a){
-			paso(x, velocidad, fuerza, fuerza_vieja,potencial, N, rc, V0, L, h);
+			paso(x, velocidad, fuerza, fuerza_vieja,potencial, N, rc, V0, L, h,p);
 	}
 
 return 0;
@@ -97,7 +97,7 @@ return lambda;
 
 int problema1(int N, int N_frames,double rc, double L, double h, double T){
 	int l;
-	double *x, *velocidad, *fuerza, *fuerza_vieja, *potencial,V0, Ec, Ep, *E_cinetica,*E_potencial,coef_verlet;
+	double *x, *velocidad, *fuerza, *fuerza_vieja, *potencial,V0, Ec, Ep, *E_cinetica,*E_potencial,coef_verlet,*p;
 
 
 	x=(double*)malloc(3*N*sizeof(double));
@@ -107,6 +107,7 @@ int problema1(int N, int N_frames,double rc, double L, double h, double T){
 	potencial=(double*)malloc(N*sizeof(double));
 	E_cinetica=(double*)malloc(3*sizeof(double));
 	E_potencial=(double*)malloc(sizeof(double));
+	p=(double*)malloc(sizeof(double));
 	
 	char filename[255];
   	sprintf(filename, "prueba.lammpstrj");
@@ -161,7 +162,7 @@ int problema1(int N, int N_frames,double rc, double L, double h, double T){
 	for(l=0;l<N_frames;l++){
 		
 
-		paso(x, velocidad, fuerza, fuerza_vieja,potencial, N, rc, V0, L, h);
+		paso(x, velocidad, fuerza, fuerza_vieja,potencial, N, rc, V0, L, h,p);
 		
 
 		Ec=energia_cinetica(velocidad,E_cinetica, N);
@@ -172,11 +173,11 @@ int problema1(int N, int N_frames,double rc, double L, double h, double T){
 		
 		fprintf(fe, "%lf %lf %lf %lf\n" ,Ec,Ep,Ec+Ep,coef_verlet);
 
-		save_lammpstrj(filename, x, velocidad, N, L, l);	
+		//save_lammpstrj(filename, x, velocidad, N, L, l);	
 
 
 	}
-	save_checkpoint(totalLine2,x,velocidad,N);
+	//save_checkpoint(totalLine2,x,velocidad,N);
 //	free(buffer);	
 	free(totalLine);	free(totalLine2);
 	fclose(fe);
@@ -194,9 +195,9 @@ return 0;
 
 
 
-int problema2(int N, int N_frames,double rc, double L, double h, double T){
-	int i,l,Q=100;
-	double *x, *velocidad, *fuerza, *fuerza_vieja, *potencial,V0, Ec, Ep, *E_cinetica,*E_potencial,coef_verlet,densidad,P_exceso,*drij;
+int problema2(int N, int N_frames,int N_prom, int N_correlacion,double rc, double L, double h, double T){
+	int i,l,Q=100,j;
+	double *x, *velocidad, *fuerza, *fuerza_vieja, *potencial,V0, Ec, Ep, *E_cinetica,*E_potencial,coef_verlet,densidad,P_exceso,*p;
 
 
 	x=(double*)malloc(3*N*sizeof(double));
@@ -207,7 +208,7 @@ int problema2(int N, int N_frames,double rc, double L, double h, double T){
 	E_cinetica=(double*)malloc(3*sizeof(double));
 	E_potencial=(double*)malloc(sizeof(double));
 	double *distrad = (double *)malloc(Q*sizeof(double));
-	drij=(double*)malloc(N*N*sizeof(double));
+	p=(double*)malloc(sizeof(double));
 	
 	char filename[255];
   	sprintf(filename, "prueba.lammpstrj");
@@ -232,7 +233,8 @@ int problema2(int N, int N_frames,double rc, double L, double h, double T){
 	memcpy(totalLine20,        dens, len30);
 	memcpy(totalLine20 + len30, buffer2, len20);
 	totalLine20[len30 + len20] = '\0';
-
+	
+	T=2.0;
 	set_box(x, N, L);
 	set_v(velocidad,N,T);
 
@@ -244,8 +246,8 @@ int problema2(int N, int N_frames,double rc, double L, double h, double T){
 	
 	normalizacion_velocidad(velocidad, E_cinetica,T, N);
 	
-	for(i=0;i<15000;i++){
-		paso(x, velocidad, fuerza, fuerza_vieja,potencial, N, rc, V0, L, h);	
+	for(i=0;i<N_correlacion;i++){
+		paso(x, velocidad, fuerza, fuerza_vieja,potencial, N, rc, V0, L, h,p);	
 	}
 //////////////////////////////////////////////////////////////////////    Esta parte es para nombrar archivos
 	char *nombre_energia= "Energia T= ";
@@ -284,25 +286,35 @@ int problema2(int N, int N_frames,double rc, double L, double h, double T){
 	//load_checkpoint(totalLine2, x, velocidad,N);
 	
 	
-
+	j=0;
 	for(l=0;l<N_frames;l++){
-		paso(x, velocidad, fuerza, fuerza_vieja,potencial, N, rc, V0, L, h);
-		
+		paso(x, velocidad, fuerza, fuerza_vieja,potencial, N, rc, V0, L, h,p);
+		j++;
+		if(j==N_correlacion){
+			j=0;
+			//printf("AAAAAAAAAAAAAAAAAAAAAAAA");
+			Ec=0.0;
+			Ep=0.0;
+			P_exceso=0.0;
+			for(i=0;i<N_prom;i++){
+				paso(x, velocidad, fuerza, fuerza_vieja,potencial, N, rc, V0, L, h,p);
+				Ec+=energia_cinetica(velocidad,E_cinetica, N);
+				Ep+=energia_potencial(potencial,E_potencial, N, 1.0);
+				P_exceso+=*p;
+			}
+			Ec=Ec/((double)N_prom);
+			Ep=Ep/((double)N_prom);
+			P_exceso=P_exceso/((double)N_prom);
+			if(T==((double)1.5)){
+			save_lammpstrj(filename, x, velocidad, N, L, l);
+			}
+			fprintf(fe, "%lf %lf %lf %lf\n" ,Ec,Ep,Ec+Ep,P_exceso);
 
-		Ec=energia_cinetica(velocidad,E_cinetica, N);
-
-		Ep=energia_potencial(potencial,E_potencial, N, 1.0);
-				
-		coef_verlet=coeficiente_verlet(L,N,x);
-	
-		P_exceso=presion(Ec,L,N,fuerza,x,rc);
-		
-		fprintf(fe, "%lf %lf %lf %lf %lf %lf\n" ,Ec,Ep,Ec+Ep,coef_verlet,P_exceso,lyderman(L,N,x,drij));
-		if(l%10==0){
-			save_lammpstrj(filename, x, velocidad, N, L, l);	
 		}
+		
+			
 	}
-	save_checkpoint(totalLine2,x,velocidad,N);
+	//save_checkpoint(totalLine2,x,velocidad,N);
 	free(totalLine);
 	free(totalLine2);
 	fclose(fe);
@@ -315,10 +327,8 @@ free(fuerza_vieja);
 free(potencial);
 free(E_cinetica);
 free(distrad);
-free(drij);
 return 0;
 }
-
 
 double presion(double Ec,double L, int N,double *fuerza,double *x,double rc){
 	int i,j,k;

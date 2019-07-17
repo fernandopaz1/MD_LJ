@@ -127,7 +127,9 @@ return (Ec+Ep);
 
 int normalizacion_velocidad(double *velocidad, double *E_cinetica,double T, int N){
 	int i;
-	double Tmedida=(2/3)*energia_cinetica(velocidad,E_cinetica, N);
+	double Tmedida=(2.0/3.0)*energia_cinetica(velocidad,E_cinetica, N);
+	printf("Tmedida = %lf\n",Tmedida);
+	printf("Tdeseada = %lf\n",T);
 	double factor=sqrt(T/Tmedida);
 	for(i=0;i<3*N;i++){
 		*(velocidad+i)=factor*(*(velocidad+i));
